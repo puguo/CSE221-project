@@ -37,9 +37,12 @@ double measure_process_switch_overhead(){
     }
     double elapsed_time = ((end_time.tv_sec - start_time.tv_sec) * 1e9 +
                               (end_time.tv_nsec - start_time.tv_nsec));
-    printf("%f\n",start_time.tv_sec* 1e9 + start_time.tv_nsec);
-    printf("%f\n",end_time.tv_sec* 1e9 + end_time.tv_nsec);
-    printf("%.2f\n", elapsed_time);
+    FILE *f = fopen("./logs/process_switch_overhead.csv", "a");
+    if (f == NULL) {
+        perror("Failed to open log file");
+        return 1;
+    }
+    fprintf(f, "%.2f\n",elapsed_time);
     return elapsed_time;
 }
 
@@ -70,9 +73,12 @@ double measure_thread_switch_overhead(){
     pthread_join(tid, NULL);
     double elapsed_time = ((end_time.tv_sec - start_time.tv_sec) * 1e9 +
                               (end_time.tv_nsec - start_time.tv_nsec));
-    printf("thread start: %f\n",start_time.tv_sec* 1e9 + start_time.tv_nsec);
-    printf("%f\n",end_time.tv_sec* 1e9 + end_time.tv_nsec);
-    printf("%.2f\n", elapsed_time);
+    FILE *f = fopen("./logs/thread_switch_overhead.csv", "a");
+    if (f == NULL) {
+        perror("Failed to open log file");
+        return 1;
+    }
+    fprintf(f, "%.2f\n",elapsed_time);
     return elapsed_time;
 }
 
