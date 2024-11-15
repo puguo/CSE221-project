@@ -10,7 +10,7 @@ void finish_timing(long sum) {
     printf("Sum: %ld\n", sum);
 }
 // wr function ref:https://github.com/intel/lmbench/blob/master/src/bw_mem.c
-// wr - 4 byte write, 32 byte stride
+// wr - 4 byte write, 16 bytes stride
 void rd(int *array, size_t size) {
     int *lastone = &array[size - 1];
     long sum = 0;
