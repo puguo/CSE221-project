@@ -10,7 +10,9 @@ void finish_timing(long sum) {
     printf("Sum: %ld\n", sum);
 }
 // rd function ref:https://github.com/intel/lmbench/blob/master/src/bw_mem.c
-// rd - 4 byte read, 16 byte stride
+// rd - 4 byte read, 128 bytes(32 ints) stride
+// the cache line size is 128 Bytes, 32 INTs
+
 void rd(int *array, size_t size) {
     int *lastone = &array[size - 1];
     long sum = 0;
@@ -20,31 +22,26 @@ void rd(int *array, size_t size) {
         while (p <= lastone) {
             sum += 
 #define DOIT(i) p[i] +
-            DOIT(0) DOIT(4) DOIT(8) DOIT(12) DOIT(16) DOIT(20) DOIT(24)
-            DOIT(28) DOIT(32) DOIT(36) DOIT(40) DOIT(44) DOIT(48) DOIT(52)
-            DOIT(56) DOIT(60) DOIT(64) DOIT(68) DOIT(72) DOIT(76)
-            DOIT(80) DOIT(84) DOIT(88) DOIT(92) DOIT(96) DOIT(100)
-            DOIT(104) DOIT(108) DOIT(112) DOIT(116) DOIT(120)
-            p[124];
+            DOIT(0) DOIT(32) DOIT(64) 
+            p[96];
             p += 128; 
         }
     }
     finish_timing(sum);
 }
 #undef DOIT
-
 void measure_memory_reading(int *array, size_t size) {
-    FILE *f = fopen("./logs/ram_read_bandwidth_64MB_Array.csv", "a");
+    FILE *f = fopen("./logs/ram_read_bandwidth_64MB_Array_2.csv", "a");
     if (f == NULL) {
         perror("Failed to open log file");
-        return 1;
+        return;
     }
     struct timespec start, end;
     clock_gettime(CLOCK_MONOTONIC, &start); 
     rd(array,size);
     clock_gettime(CLOCK_MONOTONIC, &end);
     double elapsed_time = (end.tv_sec - start.tv_sec) * 1e9 + (end.tv_nsec - start.tv_nsec);
-    long total_elements = ITERATIONS * (size / 128) * 32;
+    long total_elements = ITERATIONS * (size / 128) * 4;
     long total_bytes = total_elements * sizeof(int);
 
     double bandwidth = (double)total_bytes / (elapsed_time / 1e9);

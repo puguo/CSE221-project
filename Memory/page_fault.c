@@ -58,7 +58,8 @@ double measure_page_fault(const char *filename, size_t nbytes) {
     CHK(getrusage(RUSAGE_SELF, &usage_before));
     // printf("Major Page faults before: %ld\n", usage_before.ru_majflt);
     // printf("Minor Page faults before: %ld\n", usage_before.ru_minflt);
-    size_t page_size = sysconf(_SC_PAGESIZE);
+    // page size:16KB
+    size_t page_size = sysconf(_SC_PAGESIZE); 
     size_t num_pages = nbytes / page_size;
 
     printf("Page size: %zu bytes\n", page_size);

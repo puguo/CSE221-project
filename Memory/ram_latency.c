@@ -15,6 +15,7 @@ void measure_latency(int *array, size_t size, double *latency, int stride) {
     // Initialize the array to simulate a curricular linked list with a certain stride(to simulate random memory access)
     for (int i = 0; i < size; i += n_stride) {
         array[i] = (i+n_stride) % size;
+        // printf("%d ", array[i]);
         last = i;
     }
     array[last] = 0;
@@ -34,7 +35,7 @@ int main() {
     size_t min_size = 1 << 10 ; // 4KB array
 
     printf("Log(Size), Latency(ns)\n");
-    FILE *f = fopen("./logs/latency_results.csv", "a");
+    FILE *f = fopen("./logs/latency_results_2.csv", "a");
     if (f == NULL) {
         perror("Failed to open log file");
         return 1;
@@ -48,10 +49,10 @@ int main() {
         for (size_t i = 0; i < size; ++i) {
             array[i] = i;
         }
-        for (int stride = 1<<2; stride <= 1<<20; stride <<= 1) {
+        // The cache line size is 128 Bytes, to avoid cache prefetch, the stride would start from 1<<7 bytes.
+        for (int stride = 1<<7; stride <= 1<<20; stride <<= 1) {
             double latency;
-            // how to set stride value to avoid cache hit?
-            measure_latency(array, size, &latency, 1<<10);
+            measure_latency(array, size, &latency, stride);
             printf("%f, %.2f\n", log2(size * sizeof(int)), latency);
             fprintf(f, "%f, %d, %.2f\n", log2(size * sizeof(int)), stride, latency);
         }
